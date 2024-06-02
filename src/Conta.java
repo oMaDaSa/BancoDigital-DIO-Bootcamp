@@ -7,17 +7,26 @@ public abstract class Conta implements IConta {
 	protected int agencia;
 	protected int numero;
 	protected double saldo;
+
+	protected String tipo;
 	protected Cliente cliente;
 
-	public Conta(Cliente cliente) {
+	public Conta(Cliente cliente, String tipo) {
 		this.agencia = Conta.AGENCIA_PADRAO;
 		this.numero = SEQUENCIAL++;
 		this.cliente = cliente;
+		this.tipo = tipo;
 	}
 
 	@Override
-	public void sacar(double valor) {
-		saldo -= valor;
+	public boolean sacar(double valor) {
+		if(valor > getSaldo())
+			System.out.println("Saldo insuficiente");
+		else {
+			saldo -= valor;
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -26,9 +35,11 @@ public abstract class Conta implements IConta {
 	}
 
 	@Override
-	public void transferir(double valor, IConta contaDestino) {
-		this.sacar(valor);
-		contaDestino.depositar(valor);
+	public boolean transferir(double valor, IConta contaDestino) {
+		if(this.sacar(valor)){
+			contaDestino.depositar(valor);
+		}
+		return false;
 	}
 
 	public int getAgencia() {
@@ -43,10 +54,14 @@ public abstract class Conta implements IConta {
 		return saldo;
 	}
 
+	public String getTipo() {
+		return tipo;
+	}
+
 	protected void imprimirInfosComuns() {
-		System.out.println(String.format("Titular: %s", this.cliente.getNome()));
-		System.out.println(String.format("Agencia: %d", this.agencia));
-		System.out.println(String.format("Numero: %d", this.numero));
-		System.out.println(String.format("Saldo: %.2f", this.saldo));
+		System.out.printf("Titular: %s%n", this.cliente.getNome());
+		System.out.printf("Agencia: %d%n", this.agencia);
+		System.out.printf("Numero: %d%n", this.numero);
+		System.out.printf("Saldo: %.2f%n", this.saldo);
 	}
 }
